@@ -11,6 +11,9 @@ string int_input()
     bool error = false;
     do
     {
+        //Сброс ошибки
+        error = false;
+
         cout << "Enter payout amount: ";
         getline(cin, str);
 
@@ -20,19 +23,20 @@ string int_input()
             cerr << "Error! Repeat input." << endl;
             error = true;
         }
-        else error = false;
-
-        //Проверка что все символы - числа
-        for (int i = 0; i < str.length(); i++)
+        else 
         {
-            if (!isdigit(str[i]))
+            //Проверка что все символы - числа
+            for (int i = 0; i < str.length(); i++)
             {
-                cerr << "Error! Repeat input." << endl;
-                error = true;
-                i = str.length() - 1;
+                if (!isdigit(str[i]))
+                {
+                    cerr << "Error! Repeat input." << endl;
+                    error = true;
+                    i = str.length() - 1;
+                }
             }
-            else error = false;
         }
+        
 
     } while (error);
 
@@ -95,6 +99,8 @@ void input_data (string &data)
     string family;
     string payout;
     string date;
+
+    cout << endl;
     
     //Ввод имени и фамилии
     cout << "Enter your name: ";
@@ -115,19 +121,37 @@ void input_data (string &data)
 void write_data (ofstream &file, string &data)
 {
     file.open ("statements.txt", ios::app);
-    file.is_open() ? cout << "Data recorded!" << endl : cerr << "Data not recorded! File not found!" << endl;
+    file.is_open() ? cout << endl <<"---Data recorded!---\n" << endl : cerr << "---Data not recorded! File not found!---\n" << endl;
     file << data << endl;
     file.close();
 }
 
 int main()
 {
-    //Вызов функции ввода данных
-    string data;
-    input_data(data);
+    cout <<"-----Accounting program-----\n" << endl;
 
-    //Запись данных в файл
-    ofstream statements;
-    write_data (statements, data);
+    //Флаг конца программы
+    bool endProg = false;
+    
+    do
+    {
+        string answer;
+        cout << "You want to make the following entry in the ledger? (Yes/No) : ";
+        getline(cin, answer);
 
+        if (answer == "Yes")
+        {
+            //Вызов функции ввода данных
+            string data;
+            input_data(data);
+
+            //Запись данных в файл
+            ofstream statements;
+            write_data (statements, data);
+        } else if (answer == "No") endProg = true;
+        else cerr << "Error! Repeat input." << endl;
+    } while (!endProg);
+
+    cout << endl << "Program completed. Press any key...";
+    cin.get();
 }
